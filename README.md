@@ -36,3 +36,6 @@ Then use one of the playbooks like so:
 - https://wazuh.com/blog/hunting-for-windows-credential-access-attacks/
 - https://wazuh.com/blog/how-to-detect-active-directory-attacks-with-wazuh-part-1-of-2/
 - https://wazuh.com/blog/how-to-detect-active-directory-attacks-with-wazuh-part-2/
+- https://github.com/socfortress/Wazuh-Rules
+- https://github.com/Neo23x0/sysmon-config
+- https://github.com/olafhartong/sysmon-modular
