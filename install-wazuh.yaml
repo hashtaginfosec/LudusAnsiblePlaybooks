@@ -1,0 +1,14 @@
+---
+- name: Install and Restart Wazuh service
+  hosts: default
+  tasks:
+    - name: Install Application from msi with multiple properties for installer
+      ansible.windows.win_package:
+        path: C:\wazuh-agent-4.9.2-1.msi
+        state: present
+        arguments: >-
+          WAZUH_MANAGER=10.3.10.13
+    - name: Ensure the Wazuh service is restarted
+      win_service:
+        name: Wazuh
+        state: restarted

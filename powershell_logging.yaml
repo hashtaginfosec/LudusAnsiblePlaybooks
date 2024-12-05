@@ -1,0 +1,58 @@
+---
+- name: Configure PowerShell Logging
+  hosts: default
+  gather_facts: no
+  tasks:
+    - name: Ensure registry path for ScriptBlockLogging exists
+      win_shell: |
+        if (-not (Test-Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging")) {
+          New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Force
+        }
+
+    - name: Enable PowerShell Script Block Logging
+      win_shell: |
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockLogging" -Value 1 -Force
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Name "EnableScriptBlockInvocationLogging" -Value 1 -Force
+
+    - name: Ensure registry path for ModuleLogging exists
+      win_shell: |
+        if (-not (Test-Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging")) {
+          New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Force
+        }
+
+    - name: Enable PowerShell Module Logging
+      win_shell: |
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Name "EnableModuleLogging" -Value 1 -Force
+        New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ModuleLogging" -Name "ModuleNames" -PropertyType MultiString -Value "*" -Force
+
+    - name: Ensure registry path for Transcription exists
+      win_shell: |
+        if (-not (Test-Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription")) {
+          New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Force
+        }
+
+    - name: Enable PowerShell Transcription
+      win_shell: |
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "EnableTranscripting" -Value 1 -Force
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "IncludeInvocationHeader" -Value 1 -Force
+        Set-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\Transcription" -Name "OutputDirectory" -Value "C:\PowerShellLogs" -Force
+
+    - name: Create PowerShell log directory
+      win_file:
+        path: C:\PowerShellLogs
+        state: directory
+
+    - name: Enable Logon/Logoff Auditing for PowerShell
+      win_shell: |
+        auditpol /set /subcategory:"Logon" /success:enable /failure:enable
+        auditpol /set /subcategory:"Logoff" /success:enable /failure:enable
+        auditpol /set /subcategory:"Special Logon" /success:enable /failure:enable
+
+    - name: Verify PowerShell logging configuration
+      win_shell: |
+        Get-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\*" | Format-List
+      register: powershell_logging_config
+
+    - name: Display PowerShell logging configuration
+      debug:
+        var: powershell_logging_config.stdout_lines

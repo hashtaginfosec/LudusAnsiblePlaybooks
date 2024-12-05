@@ -1,0 +1,56 @@
+---
+- name: Configure AD Domain Audit Policies
+  hosts: default
+  gather_facts: no
+  tasks:
+    - name: Ensure WinRM is enabled
+      win_shell: |
+        Enable-PSRemoting -Force
+
+    - name: Enable Directory Service Access audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Directory Service Access" /success:enable /failure:enable
+
+    - name: Enable Directory Service Changes audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Directory Service Changes" /success:enable /failure:enable
+
+    - name: Enable Account Management audit policy
+      win_shell: |
+        auditpol /set /subcategory:"User Account Management" /success:enable /failure:enable
+
+    - name: Enable Security Group Management audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Security Group Management" /success:enable /failure:enable
+
+    - name: Enable Directory Service Replication audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Directory Service Replication" /success:enable /failure:enable
+
+    - name: Enable Credential Validation audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Credential Validation" /success:enable /failure:enable
+
+    - name: Enable Kerberos Authentication Service audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Kerberos Authentication Service" /success:enable /failure:enable
+
+    - name: Enable Kerberos Service Ticket Operations audit policy
+      win_shell: |
+        auditpol /set /subcategory:"Kerberos Service Ticket Operations" /success:enable /failure:enable
+
+    - name: Verify the audit policy settings
+      win_shell: |
+        auditpol /get /subcategory:"Directory Service Access"
+        auditpol /get /subcategory:"Directory Service Changes"
+        auditpol /get /subcategory:"User Account Management"
+        auditpol /get /subcategory:"Security Group Management"
+        auditpol /get /subcategory:"Directory Service Replication"
+        auditpol /get /subcategory:"Credential Validation"
+        auditpol /get /subcategory:"Kerberos Authentication Service"
+        auditpol /get /subcategory:"Kerberos Service Ticket Operations"
+      register: ldap_audit_output
+
+    - name: Display AD audit policy configuration
+      debug:
+        var: ldap_audit_output.stdout_lines

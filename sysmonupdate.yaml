@@ -1,0 +1,25 @@
+---
+- name: Update Sysmon Configuration
+  hosts: default
+  tasks:
+    - name: Copy Sysmon configuration file to the target machine
+      win_copy:
+        src: ./sysmonconfig-export.xml
+        dest: C:\sysmonconfig-export.xml
+
+    - name: Update Sysmon configuration
+      win_shell: |
+        C:\Windows\Sysmon.exe -c C:\sysmonconfig-export.xml
+      args:
+        executable: cmd
+
+    - name: Confirm Sysmon configuration update
+      win_shell: |
+        C:\Windows\Sysmon.exe -c
+      args:
+        executable: cmd
+      register: sysmon_status
+
+    - name: Display the updated configuration status
+      debug:
+        msg: "{{ sysmon_status.stdout }}"

@@ -1,0 +1,17 @@
+---
+- name: Copy file to or from machine(s)
+  hosts: default
+  tasks:
+    - name: Copy Sysmon.zip to remote machines
+      win_copy:
+        src: ~/ansible/Sysmon.zip
+        dest: C:\Sysmon.zip
+    - name: Copy Sysmon Config to remote machines
+      win_copy:
+        src: ./sysmonconfig-export.xml
+        dest: C:\sysmonconfig-export.xml
+
+    - name: Copy Wazuh Installer to remote machines
+      win_copy:
+        src: ./wazuh-agent-4.9.2-1.msi
+        dest: C:\wazuh-agent-4.9.2-1.msi
