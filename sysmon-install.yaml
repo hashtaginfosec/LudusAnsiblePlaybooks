@@ -1,0 +1,35 @@
+---
+- name: Copy and install Sysmon
+  hosts: default
+  tasks:
+    - name: Copy Sysmon.zip to remote machines
+      win_copy:
+        src: ~/ansible/Sysmon.zip
+        dest: C:\Sysmon.zip
+
+    - name: Copy Sysmon Config to remote machines
+      win_copy:
+        src: ./sysmonconfig-excludes-only.xml
+        dest: C:\sysmonconfig-excludes-only.xml
+
+    - name: Decompress Sysmon.zip
+      win_unzip:
+        src: C:\Sysmon.zip
+        dest: C:\Symon
+
+    - name: Install Sysmon
+      win_shell: |
+        C:\Sysmon\sysmon.exe -accepteula -i sysmonconfig-excludes-only.xml
+      args:
+        executable: cmd
+
+    - name: Confirm Sysmon configuration update
+      win_shell: |
+        C:\Windows\Sysmon.exe -c
+      args:
+        executable: cmd
+      register: sysmon_status
+
+    - name: Display the updated configuration status
+      debug:
+        msg: "{{ sysmon_status.stdout }}"
