@@ -1,0 +1,10 @@
+---
+- name: Install Vulners agent on Windows
+  hosts: default
+  tasks:
+    - name: Install Application from msi with multiple properties for installer
+      ansible.windows.win_package:
+        path: C:\VulnersAgentInstaller_v2.2.3_x64.msi
+        state: present
+        arguments: >-
+          APIKEY=Your-Vulners-API-Key
